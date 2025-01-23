@@ -1,0 +1,11 @@
+[project]
+name = "prefect-start"
+version = "0.1.0"
+description = "An opinionated example of a Prefect project"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "prefect>=3.1.13",
+    "prefect-aws>=0.5.3",
+    "prefect-docker>=0.6.2",
+]
