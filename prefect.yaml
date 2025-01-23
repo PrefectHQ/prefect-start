@@ -1,0 +1,41 @@
+name: prefect-start
+prefect-version: 3.1.13
+
+build:
+- prefect.deployments.steps.run_shell_script:
+    id: get_commit_hash
+    script: git rev-parse --short HEAD
+    stream_output: false
+- prefect_docker.deployments.steps.build_docker_image:
+    id: build_image
+    image_name: "{{ prefect.variables.flow_image }}"
+    tag: latest
+    # TODO: is this tag pushed to ECR?
+    additional_tags:
+      - "{{ get_commit_hash.stdout }}"
+    dockerfile: Dockerfile
+    platform: linux/amd64
+
+push:
+- prefect_docker.deployments.steps.push_docker_image:
+    image_name: '{{ build_image.image_name }}'
+    tag: '{{ build_image.tag }}'
+
+pull:
+- prefect.deployments.steps.set_working_directory:
+    directory: /opt/prefect
+
+# the deployments section allows you to provide configuration for deploying flows
+deployments:
+- name: ecs
+  entrypoint: flows/hello.py:hello
+  version: "{{ get_commit_hash.stdout }}"
+  tags:
+    - "{{ get_commit_hash.stdout }}"
+  description: A simple flow that says hello.
+  schedules: null
+  parameters: {}
+  work_pool:
+    name: ecs
+    job_variables:
+      image: '{{ build_image.image }}'
