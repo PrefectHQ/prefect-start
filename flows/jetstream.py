@@ -6,11 +6,13 @@ import asyncio
 import io
 import time
 from prefect import flow, get_run_logger
+from prefect.variables import Variable
 import duckdb
 import pendulum
 import websockets
 
 JETSTREAM_URL = "wss://jetstream1.us-west.bsky.network/subscribe"
+BUCKET = Variable.get("storage_bucket")
 BATCH_SIZE = 50_000
 
 
@@ -35,7 +37,9 @@ def write_messages(con, fh):
             "identity": "JSON",
             "account": "JSON",
         },
-    ).write_parquet(f"data/jetstream-{pendulum.now().isoformat()}.parquet")
+    ).write_parquet(
+        f"s3://{BUCKET}/jetstream/jetstream-{pendulum.now().isoformat()}.parquet"
+    )
     # Clear the memory buffer
     fh.truncate(0)
     fh.seek(0)
@@ -48,6 +52,9 @@ async def source_jetstream(batches: int = 100):
     # Open connection to the jetstream and duckdb
     async with websockets.connect(JETSTREAM_URL) as ws:
         with duckdb.connect() as con, io.StringIO() as fh:
+            # Authenticate to AWS for S3 use
+            con.sql("CREATE SECRET (TYPE S3, PROVIDER CREDENTIAL_CHAIN);")
+
             for _ in range(batches):
                 logger.info(f"Reading {BATCH_SIZE} messages from the jetstream")
                 _start = time.time()

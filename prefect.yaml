@@ -27,12 +27,24 @@ pull:
 
 # the deployments section allows you to provide configuration for deploying flows
 deployments:
-- name: ecs
+- name: hello-ecs
   entrypoint: flows/hello.py:hello
   version: "{{ get_commit_hash.stdout }}"
   tags:
     - "{{ get_commit_hash.stdout }}"
   description: A simple flow that says hello.
+  schedules: null
+  parameters: {}
+  work_pool:
+    name: ecs
+    job_variables:
+      image: '{{ build_image.image }}'
+- name: jetstream-ecs
+  entrypoint: flows/jetstream.py:source_jetstream
+  version: "{{ get_commit_hash.stdout }}"
+  tags:
+    - "{{ get_commit_hash.stdout }}"
+  description: Reads from the BlueSky Jetstream via websocket and stores the data in object storage.
   schedules: null
   parameters: {}
   work_pool:

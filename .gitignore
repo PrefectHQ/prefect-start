@@ -1,3 +1,6 @@
+# Local
+data/
+
 # Terraform
 .terraform/
 .terraform.lock.hcl
