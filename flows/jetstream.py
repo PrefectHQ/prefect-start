@@ -55,9 +55,12 @@ async def source_jetstream(batches: int = 100):
     bucket = await Variable.get("storage_bucket")
 
     # Open connection to the jetstream and duckdb
+    logger.info(f"Connecting to the jetstream at {JETSTREAM_URL}")
     async with websockets.connect(JETSTREAM_URL) as ws:
+        logger.info("Opening in-memory connection to duckdb")
         with duckdb.connect() as con, io.StringIO() as fh:
             # Authenticate to AWS for S3 use
+            logger.info("Authenticating duckdb to S3")
             con.sql("CREATE SECRET (TYPE S3, PROVIDER CREDENTIAL_CHAIN);")
 
             for _ in range(batches):

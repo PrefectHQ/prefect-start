@@ -5,3 +5,5 @@ COPY pyproject.toml .
 RUN uv sync
 
 COPY flows/ /opt/prefect/flows/
+
+ENTRYPOINT ["uv", "run"]

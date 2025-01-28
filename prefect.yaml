@@ -18,8 +18,8 @@ build:
 
 push:
 - prefect_docker.deployments.steps.push_docker_image:
-    image_name: '{{ build_image.image_name }}'
-    tag: '{{ build_image.tag }}'
+    image_name: "{{ build_image.image_name }}"
+    tag: "{{ build_image.tag }}"
 
 pull:
 - prefect.deployments.steps.set_working_directory:
@@ -38,16 +38,17 @@ deployments:
   work_pool:
     name: ecs
     job_variables:
-      image: '{{ build_image.image }}'
+      image: "{{ build_image.image }}"
 - name: jetstream-ecs
   entrypoint: flows/jetstream.py:source_jetstream
   version: "{{ get_commit_hash.stdout }}"
   tags:
     - "{{ get_commit_hash.stdout }}"
   description: Reads from the BlueSky Jetstream via websocket and stores the data in object storage.
-  schedules: null
+  schedules:
+    - cron: "30 * * * *"
   parameters: {}
   work_pool:
     name: ecs
     job_variables:
-      image: '{{ build_image.image }}'
+      image: "{{ build_image.image }}"
