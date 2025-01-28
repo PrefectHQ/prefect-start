@@ -10,8 +10,8 @@ import duckdb
 import pendulum
 import websockets
 
-JETSTREAM_URL = "wss://jetstream1.us-west.bsky.network/subscribe?wantedCollections=app.bsky.feed.post"
-BATCH_SIZE = 10_000
+JETSTREAM_URL = "wss://jetstream1.us-west.bsky.network/subscribe"
+BATCH_SIZE = 50_000
 
 
 async def read_messages(ws, fh):
@@ -42,7 +42,7 @@ def write_messages(con, fh):
 
 
 @flow
-async def source_jetstream(batches: int = 10):
+async def source_jetstream(batches: int = 100):
     logger = get_run_logger()
 
     # Open connection to the jetstream and duckdb
