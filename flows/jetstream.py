@@ -5,6 +5,8 @@ Reads from the BlueSky Jetstream via websocket and stores the data in object sto
 import asyncio
 import io
 import time
+import uuid
+
 from prefect import flow, get_run_logger
 from prefect.variables import Variable
 import duckdb
@@ -24,7 +26,10 @@ async def read_messages(ws, fh):
     fh.seek(0)
 
 
-def write_messages(con, fh, bucket):
+async def write_messages(con, fh, bucket):
+    path = (
+        f"{bucket}/source/jetstream/{pendulum.now().isoformat()}-{uuid.uuid4()}.parquet"
+    )
     # Write the messages to disk as a parquet file
     con.read_json(
         fh,
@@ -36,12 +41,12 @@ def write_messages(con, fh, bucket):
             "identity": "JSON",
             "account": "JSON",
         },
-    ).write_parquet(
-        f"{bucket}/jetstream/jetstream-{pendulum.now().isoformat()}.parquet"
-    )
+        # TODO: partition by date
+    ).write_parquet(path)
     # Clear the memory buffer
     fh.truncate(0)
     fh.seek(0)
+    return path
 
 
 @flow
@@ -63,11 +68,10 @@ async def source_jetstream(batches: int = 100):
                     f"Read {BATCH_SIZE} messages in {time.time() - _start:.2f} seconds"
                 )
 
-                logger.info(f"Writing {BATCH_SIZE} messages to disk as a parquet file")
                 _start = time.time()
-                write_messages(con, fh, bucket)
+                path = await write_messages(con, fh, bucket)
                 logger.info(
-                    f"Wrote {BATCH_SIZE} messages in {time.time() - _start:.2f} seconds"
+                    f"Wrote messages to '{path}' in {time.time() - _start:.2f} seconds"
                 )
 
 
