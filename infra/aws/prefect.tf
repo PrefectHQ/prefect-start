@@ -30,7 +30,7 @@ resource "prefect_variable" "flow_image" {
 
 resource "prefect_variable" "storage_bucket" {
   name         = "storage_bucket"
-  value        = aws_s3_bucket.prefect_storage.bucket
+  value        = "s3://${aws_s3_bucket.prefect_storage.bucket}"
   workspace_id = prefect_workspace.workspace.id
 }
 

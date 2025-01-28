@@ -12,7 +12,6 @@ import pendulum
 import websockets
 
 JETSTREAM_URL = "wss://jetstream1.us-west.bsky.network/subscribe"
-BUCKET = Variable.get("storage_bucket")
 BATCH_SIZE = 50_000
 
 
@@ -25,7 +24,7 @@ async def read_messages(ws, fh):
     fh.seek(0)
 
 
-def write_messages(con, fh):
+def write_messages(con, fh, bucket):
     # Write the messages to disk as a parquet file
     con.read_json(
         fh,
@@ -38,7 +37,7 @@ def write_messages(con, fh):
             "account": "JSON",
         },
     ).write_parquet(
-        f"s3://{BUCKET}/jetstream/jetstream-{pendulum.now().isoformat()}.parquet"
+        f"{bucket}/jetstream/jetstream-{pendulum.now().isoformat()}.parquet"
     )
     # Clear the memory buffer
     fh.truncate(0)
@@ -48,6 +47,7 @@ def write_messages(con, fh):
 @flow
 async def source_jetstream(batches: int = 100):
     logger = get_run_logger()
+    bucket = await Variable.get("storage_bucket")
 
     # Open connection to the jetstream and duckdb
     async with websockets.connect(JETSTREAM_URL) as ws:
@@ -65,7 +65,7 @@ async def source_jetstream(batches: int = 100):
 
                 logger.info(f"Writing {BATCH_SIZE} messages to disk as a parquet file")
                 _start = time.time()
-                write_messages(con, fh)
+                write_messages(con, fh, bucket)
                 logger.info(
                     f"Wrote {BATCH_SIZE} messages in {time.time() - _start:.2f} seconds"
                 )
