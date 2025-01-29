@@ -262,6 +262,16 @@ resource "aws_security_group" "prefect_sg" {
   vpc_id      = var.aws_vpc_id
 }
 
+resource "aws_security_group_rule" "http_outbound" {
+  description       = "HTTP outbound"
+  type              = "egress"
+  security_group_id = aws_security_group.prefect_sg.id
+  from_port         = 80
+  to_port           = 80
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
+}
+
 resource "aws_security_group_rule" "https_outbound" {
   description       = "HTTPS outbound"
   type              = "egress"
@@ -270,7 +280,6 @@ resource "aws_security_group_rule" "https_outbound" {
   to_port           = 443
   protocol          = "tcp"
   cidr_blocks       = ["0.0.0.0/0"]
-
 }
 
 // ECS
