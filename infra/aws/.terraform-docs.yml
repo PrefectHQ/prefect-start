@@ -1,0 +1,6 @@
+# Generate with `terraform-docs infra/aws`
+formatter: markdown table
+
+output:
+  file: README.md
+  mode: inject
