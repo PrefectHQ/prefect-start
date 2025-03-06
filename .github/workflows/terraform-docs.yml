@@ -16,4 +16,4 @@ jobs:
     - name: Render terraform docs and push changes back to PR
       uses: terraform-docs/gh-actions@v1
       with:
-        config-file: infra/aws/.terraform-docs.yml
+        working-dir: infra/aws
