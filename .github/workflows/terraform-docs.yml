@@ -17,3 +17,4 @@ jobs:
       uses: terraform-docs/gh-actions@v1
       with:
         working-dir: infra/aws
+        git-push: "true"
