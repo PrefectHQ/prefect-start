@@ -1,3 +1,5 @@
 FROM prefecthq/prefect:3-latest
 
 RUN uv pip install prefect-aws
+
+ENTRYPOINT ["uv", "run"]
