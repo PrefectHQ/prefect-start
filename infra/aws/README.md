@@ -15,10 +15,10 @@ This directory contains all the Terraform code you need to get started with Pref
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.84.0 |
-| <a name="provider_docker"></a> [docker](#provider\_docker) | 3.0.2 |
-| <a name="provider_prefect"></a> [prefect](#provider\_prefect) | 2.13.6 |
-| <a name="provider_random"></a> [random](#provider\_random) | 3.6.3 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | ~> 5.0 |
+| <a name="provider_docker"></a> [docker](#provider\_docker) | ~> 3.0 |
+| <a name="provider_prefect"></a> [prefect](#provider\_prefect) | ~> 2.0 |
+| <a name="provider_random"></a> [random](#provider\_random) | n/a |
 
 ## Modules
 
@@ -72,7 +72,7 @@ No modules.
 | <a name="input_aws_region"></a> [aws\_region](#input\_aws\_region) | The AWS region to deploy the resources to. | `string` | n/a | yes |
 | <a name="input_aws_subnet_ids"></a> [aws\_subnet\_ids](#input\_aws\_subnet\_ids) | The subnets to deploy the resources to. | `list(string)` | n/a | yes |
 | <a name="input_aws_vpc_id"></a> [aws\_vpc\_id](#input\_aws\_vpc\_id) | The VPC to deploy the resources to. | `string` | n/a | yes |
-| <a name="input_environment"></a> [environment](#input\_environment) | The environment name. This is used to name resources. | `string` | `"dev"` | no |
+| <a name="input_environment"></a> [environment](#input\_environment) | The environment name. This is used to name most resources. | `string` | `"dev"` | no |
 | <a name="input_flow_run_cpu"></a> [flow\_run\_cpu](#input\_flow\_run\_cpu) | The default CPU allocation for flow runs. | `number` | `1024` | no |
 | <a name="input_flow_run_memory"></a> [flow\_run\_memory](#input\_flow\_run\_memory) | The default memory allocation for flow runs. | `number` | `2048` | no |
 | <a name="input_prefect_account_id"></a> [prefect\_account\_id](#input\_prefect\_account\_id) | The Prefect account ID to create resources in. | `string` | n/a | yes |
